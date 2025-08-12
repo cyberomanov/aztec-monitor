@@ -62,7 +62,11 @@ if __name__ == '__main__':
             for acc in accs:
                 main(browser=browser, telegram=telegram)
                 sleep_in_range(*config.sleep_between_accs)
-            sleep_in_range(*config.sleep_between_loop)
+            sleep_in_range(
+                sec_from=config.sleep_between_loop[0],
+                sec_to=config.sleep_between_loop[1],
+                log="after loop"
+            )
 
         except KeyboardInterrupt:
             exit()
