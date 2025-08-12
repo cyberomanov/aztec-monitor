@@ -1,0 +1,13 @@
+[project]
+name = "aztec-monitor"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fake-useragent>=2.2.0",
+    "loguru>=0.7.3",
+    "pydantic==1.10.12",
+    "requests>=2.32.4",
+    "tls-client>=1.0.1",
+]
