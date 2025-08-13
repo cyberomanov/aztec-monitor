@@ -18,7 +18,7 @@ class CoreBrowser:
             random_tls_extension_order=True
         )
 
-        if self.proxy:
+        if self.proxy and self.proxy not in ["http://log:pass@ip:port", "socks5://log:pass@ip:port"]:
             session.proxies = {
                 'http': self.proxy,
                 'https': self.proxy

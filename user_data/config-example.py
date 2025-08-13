@@ -1,16 +1,19 @@
-# максимальное количество попыток при ошибках
+# maximum number of retry attempts on errors
 max_retries = 3
 
-# мобильный прокси для взаимодействия с aztecscan и dashtec
+# mobile proxy for interaction with aztecscan and dashtec to avoid rate limits
+# you can buy mobile/residential proxies here: https://proxyshard.com?ref=cyberomanov
+# if you don't want to use proxy, you can leave this setting as is or fill with empty string
 mobile_proxy = "socks5://log:pass@ip:port"
 # mobile_proxy = "http://log:pass@ip:port"
+# mobile_proxy = ""
 
-# сон в секундах между аккаунтами
+# sleep in seconds between account checks
 sleep_between_accs = (3, 5)
-# сон в секундах между кругами
+# sleep in seconds between cycles
 sleep_between_loop = (600, 800)
 
-# апи ключ от телеграм бота
+# telegram bot API key
 bot_api_key = "22222:AAA-BBB"
-# id чата, куда слать уведомления при критических показателях
+# chat ID where to send notifications for critical metrics
 alarm_chat_id = "-1111"

@@ -1,121 +1,139 @@
 # Aztec Monitor
 
-Монитор валидаторов Aztec Network с автоматическими алертами в Telegram и генерацией отчетов.
+Aztec Network validator monitor with automatic Telegram alerts and report generation.
 
-## Установка
+## Installation on Linux
 
-### 1. Установка uv
+### 1. Clone repository
 ```bash
-# macOS/Linux
+git clone https://github.com/cyberomanov/aztec-monitor.git
+cd aztec-monitor
+```
+
+### 2. Install uv
+```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### 2. Установка зависимостей
+### 3. Install dependencies
 ```bash
 uv sync
 ```
 
-## Настройка
+## Configuration
 
-### 1. Конфигурация
-Скопируйте пример конфига и настройте:
+### 1. Configuration
+Copy the example config and configure:
 ```bash
 cp user_data/config-example.py user_data/config.py
 ```
 
-Отредактируйте `user_data/config.py`:
+Edit `user_data/config.py`:
 ```python
-# Максимальное количество попыток при ошибках
+# maximum number of retry attempts on errors
 max_retries = 3
 
-# Мобильный прокси (опционально)
-mobile_proxy = "socks5://user:pass@ip:port"  # или None
+# mobile proxy for interaction with aztecscan and dashtec to avoid rate limits
+# you can buy mobile/residential proxies here: https://proxyshard.com?ref=cyberomanov
+# if you don't want to use proxy, you can leave this setting as is or fill with empty string
+mobile_proxy = "socks5://log:pass@ip:port"
+# mobile_proxy = "http://log:pass@ip:port"
+# mobile_proxy = ""
 
-# Задержки между запросами (сек)
-sleep_between_accs = (3, 5)      # между аккаунтами
-sleep_between_loop = (600, 800)  # между циклами
+# sleep in seconds between account checks
+sleep_between_accs = (3, 5)
+# sleep in seconds between cycles
+sleep_between_loop = (600, 800)
 
-# Telegram бот для алертов
-bot_api_key = "YOUR_BOT_TOKEN"
-alarm_chat_id = "YOUR_CHAT_ID"
+# telegram bot API key
+bot_api_key = "22222:AAA-BBB"
+# chat ID where to send notifications for critical metrics
+alarm_chat_id = "-1111"
+
 ```
 
-### 2. Список валидаторов
-Отредактируйте `user_data/accounts.csv`:
+### 2. Validator list
+Edit `user_data/accounts.csv`:
 ```csv
 id,address,ip,port,note
-1,0x1xxxxxx130,91.11.11.108,1492,my-validator-1
-2,0x9xxxxxxFc4,91.12.12.107,1492,my-validator-2
+1,0xAAAAAA,1.2.3.4,1492,4-8-200-netherlands
+2,0xBBBBBB,5.6.7.8,1492,16-64-2048-estonia
 ```
 
-## Запуск
+## Running
 
 ```bash
 uv run main.py
 ```
 
-### Основной алгоритм
+## Core Algorithm
 
-1. **Инициализация**:
-   - Загрузка конфигурации
-   - Чтение списка валидаторов из CSV
-   - Создание HTTP клиентов с прокси
+1. **Initialization**:
+   - Configuration loading
+   - Reading validator list from CSV
+   - Creating HTTP clients with proxy if configured
 
-2. **Цикл мониторинга** (для каждого валидатора):
+2. **Monitoring cycle** (for each validator):
    
-   **2.1 Проверка доступности ноды**:
+   **2.1 Node availability check**:
    ```python
-   # RPC запрос node_getL2Tips к валидатору
+   # RPC request node_getL2Tips to the server where validator is installed
    POST http://{validator_ip}:{port}
    payload: {"jsonrpc": "2.0", "method": "node_getL2Tips", "params": [], "id": 67}
    ```
    
-   **2.2 Проверка синхронизации**:
+   **2.2 Synchronization check**:
    ```python
-   # Получение высоты блока с explorer
+   # Get block height from explorer
    GET https://api.testnet.aztecscan.xyz/v1/temporary-api-key/l2/ui/blocks-for-table
    
-   # Сравнение: если нода отстает на >3 блока → алерт
+   # Comparison: if node is behind by >3 blocks → alert
    if validator_height + 3 < explorer_height:
        send_telegram_alert()
    ```
    
-   **2.3 Сбор статистики валидатора**:
+   **2.3 Validator statistics collection**:
    ```python
-   # Получение данных с Dashtec
+   # Get data from Dashtec
    GET https://dashtec.xyz/api/validators/{validator_address}
    
-   # Парсинг: баланс, награды, аттестации, блоки
+   # Parsing: balance, rewards, attestations, blocks
+   ```
+   **2.4 Queue and registration information collection**:
+   ```python
+   # Get data from Dashtec
+   GET https://dashtec.xyz/api/validators/queue?page=1&limit=10&search={validator_address}
+   
+   # Parsing: queue, whether validator is registered
    ```
    
-   **2.4 Генерация алертов**:
-   - Недоступность RPC
-   - Рассинхронизация с сетью  
-   - Статус "не найден" в dashtec
+   **2.5 Alert generation**:
+   - RPC unavailability
+   - Network desynchronization
 
-3. **Сохранение данных**:
-   - CSV отчеты с timestamp в `user_data/reports/`
-   - Логи всех операций через loguru
+3. **Data saving**:
+   - CSV reports with timestamp in `user_data/reports/`
+   - Logs of all operations via loguru
 
-4. **Задержки и повторы**:
-   - Между валидаторами: 3-5 сек
-   - Между циклами: 10-13 мин
-   - Retry при ошибках HTTP: до 3 попыток
+4. **Delays and retries**:
+   - Between validators: as configured, default: 3-5 sec
+   - Between cycles: as configured, default: 10-13 min
+   - Retry on HTTP errors: up to 3 attempts
 
-### Основные компоненты
+## Core Components
 
-- **AztecBrowser**: HTTP клиент для взаимодействия с API
-- **Telegram**: Отправка алертов в Telegram
-- **Balance**: Конвертация wei → STK (деление на 10^18)
-- **Retrier**: Decorator для повторных попыток при ошибках
-- **CsvAccount**: Структура данных валидатора
+- **AztecBrowser**: HTTP client for API interaction
+- **Telegram**: Sending alerts to Telegram
+- **Balance**: Converting wei → STK (division by 10^18)
+- **Retrier**: Decorator for retry attempts on errors
+- **CsvAccount**: Validator data structure
 
-### Мониторируемые метрики
+## Monitored Metrics
 
-- Статус валидатора (active/not_active)
-- Высота синхронизации 
-- Баланс и неполученные награды
-- Статистика аттестаций (пропущено/успешно)
-- Статистика блоков (пропущено/добыто/предложено)
+- Validator status (validating/queue/registered)
+- Synchronization height
+- Balance and unclaimed rewards
+- Attestation statistics (missed/successful)
+- Block statistics (missed/mined/proposed)
 
-Алерты отправляются при критических событиях: недоступность ноды, рассинхронизация, смена статуса валидатора.
+Alerts are sent on critical events: node unavailability or desynchronization.

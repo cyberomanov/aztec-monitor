@@ -148,7 +148,11 @@ if __name__ == '__main__':
             report_file = f"user_data/reports/{timestamp}.csv"
             os.makedirs(os.path.dirname(report_file), exist_ok=True)
 
-            explorer_browser = AztecBrowser(browser=CoreBrowser(proxy=config.mobile_proxy))
+            explorer_browser = AztecBrowser(
+                browser=CoreBrowser(
+                    proxy=config.mobile_proxy
+                )
+            )
             server_browser = AztecBrowser(browser=CoreBrowser())
             telegram = Telegram(bot_api_token=config.bot_api_key, alarm_chat_id=config.alarm_chat_id)
 
