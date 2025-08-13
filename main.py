@@ -143,6 +143,7 @@ if __name__ == '__main__':
         try:
             timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
             report_file = f"user_data/reports/{timestamp}.csv"
+            os.makedirs(os.path.dirname(report_file), exist_ok=True)
 
             explorer_browser = AztecBrowser(browser=CoreBrowser(proxy=config.mobile_proxy))
             server_browser = AztecBrowser(browser=CoreBrowser())
