@@ -30,12 +30,12 @@ class Telegram:
         ).json()
         return TelegramResponse.parse_obj(response)
 
-    def send_alarm(self, head: str, body: str, dashboard: str) -> TelegramResponse:
+    def send_alarm(self, head: str, body: str, dashtec: str, sepoliascan: str) -> TelegramResponse:
         head_escaped = _escape_markdown_v2(head)
         body_escaped = _escape_markdown_v2(body)
         text = (
             f"*{head_escaped}*\n\n"
-            f"[dashtec]({dashboard})\n\n"
+            f"[DASHTEC]({dashtec}) /// [SEPOLIASCAN]({sepoliascan})\n\n"
             f"`{body_escaped}`"
         )
         return self._send_message(text=text, chat_id=self.alarm_chat_id)

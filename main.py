@@ -80,7 +80,8 @@ def main_checker(
         telegram.send_alarm(
             head=f"{acc.ip} | {acc.note}",
             body="can't get the latest block.",
-            dashboard=f"https://dashtec.xyz/validators/{acc.address}"
+            dashtec=f"https://dashtec.xyz/validators/{acc.address}",
+            sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
         )
         return acc_report
 
@@ -96,8 +97,9 @@ def main_checker(
         )
         telegram.send_alarm(
             head=f"{acc.ip} | {acc.note}",
-            body=f"explorer height: {latest_explorer_block}\nbut the node is on {server_block_r.result.latest.number}.",
-            dashboard=f"https://dashtec.xyz/validators/{acc.address}"
+            body="can't get the latest block.",
+            dashtec=f"https://dashtec.xyz/validators/{acc.address}",
+            sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
         )
         return acc_report
 
@@ -133,7 +135,10 @@ def main_checker(
         if queue_r:
             status = f'#{queue_r}' if queue_r != "not_registered" else queue_r
             acc_report.update({'status': {status}})
-            logger.warning(f"#{acc.id} | {acc.address} | status: {status}.")
+            logger.warning(
+                f"#{acc.id} | {acc.address} | status: {status} | "
+                f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number}."
+            )
 
     return acc_report
 
@@ -148,11 +153,7 @@ if __name__ == '__main__':
             report_file = f"user_data/reports/{timestamp}.csv"
             os.makedirs(os.path.dirname(report_file), exist_ok=True)
 
-            explorer_browser = AztecBrowser(
-                browser=CoreBrowser(
-                    proxy=config.mobile_proxy
-                )
-            )
+            explorer_browser = AztecBrowser(browser=CoreBrowser(proxy=config.mobile_proxy))
             server_browser = AztecBrowser(browser=CoreBrowser())
             telegram = Telegram(bot_api_token=config.bot_api_key, alarm_chat_id=config.alarm_chat_id)
 
