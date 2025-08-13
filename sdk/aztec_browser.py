@@ -8,14 +8,12 @@ from user_data import config
 
 class AztecBrowser(CoreBrowser):
     def __init__(self, browser: CoreBrowser):
-        self.rpc = "https://octra.network"
-
         self.max_retries = config.max_retries
         self.proxy = browser.proxy
         self.session = browser.session
 
-    @retry(module="aztec: get_block_req")
-    def get_block_req(self, ip: str, port: int) -> LatestBlockResponse:
+    @retry(module="aztec: get_server_block_req")
+    def get_server_block_req(self, ip: str, port: int) -> LatestBlockResponse:
         payload = {
             "jsonrpc": "2.0",
             "method": "node_getL2Tips",
@@ -45,3 +43,14 @@ class AztecBrowser(CoreBrowser):
             return DashtecResponse(status='not_found')
         else:
             raise Exception(f"can't get validator dashtec: {r}")
+
+    @retry(module="aztec: get_explorer_block_req")
+    def get_explorer_block_req(self) -> DashtecResponse:
+        r = self.process_request(
+            method="GET",
+            url=f"https://api.testnet.aztecscan.xyz/v1/temporary-api-key/l2/ui/blocks-for-table"
+        )
+        if r:
+            return r[0]
+        else:
+            raise Exception(f"can't get explorer block: {r}")
