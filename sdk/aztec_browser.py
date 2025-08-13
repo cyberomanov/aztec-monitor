@@ -54,3 +54,16 @@ class AztecBrowser(CoreBrowser):
             return r[0]
         else:
             raise Exception(f"can't get explorer block: {r}")
+
+    @retry(module="aztec: get_queue_req")
+    def get_queue_req(self, address: str) -> str:
+        r = self.process_request(
+            method="GET",
+            url=f"https://dashtec.xyz/api/validators/queue?page=1&limit=10&search={address}"
+        )
+        if r and r.get('validatorsInQueue'):
+            return r.get('validatorsInQueue')[0].get('position', 999_999)
+        elif r and not r.get('validatorsInQueue'):
+            return "not_registered"
+        else:
+            raise Exception(f"can't get validator queue position: {r}")

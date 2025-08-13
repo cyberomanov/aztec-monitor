@@ -129,8 +129,11 @@ def main_checker(
             f"{dashtec_r.totalBlocksMissed}/{dashtec_r.totalBlocksMined}/{dashtec_r.totalBlocksProposed}."
         )
     elif dashtec_r.status == 'not_found':
-        acc_report.update({'status': 'not_active'})
-        logger.warning(f"#{acc.id} | {acc.address} | status: not active validator yet.")
+        queue_r = explorer_browser.get_queue_req(address=acc.address)
+        if queue_r:
+            status = f'#{queue_r}' if queue_r != "not_registered" else queue_r
+            acc_report.update({'status': {status}})
+            logger.warning(f"#{acc.id} | {acc.address} | status: {status}.")
 
     return acc_report
 
