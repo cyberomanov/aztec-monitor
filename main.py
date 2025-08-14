@@ -22,8 +22,7 @@ def save_report(report_file: str, acc: CsvAccount, data: dict):
     with open(report_file, 'a', newline='', encoding='utf-8') as csvfile:
         fieldnames = [
             'id', 'address', 'ip', 'port', 'note',
-            'status',
-            'sync_latest',
+            'version', 'status', 'sync_latest',
             'balance', 'rewards',
             'attestations_missed', 'attestations_succeeded', 'attestation_success',
             'block_missed', 'block_mined', 'block_proposed'
@@ -41,6 +40,7 @@ def save_report(report_file: str, acc: CsvAccount, data: dict):
             'port': acc.port,
             'note': acc.note or '',
             'status': data.get('status', ''),
+            'version': data.get('version', 'v0.0.0'),
             'sync_latest': data.get('sync_latest', 0),
             'balance': data.get('balance', 0),
             'rewards': data.get('rewards', 0),
@@ -63,6 +63,7 @@ def main_checker(
 ):
     acc_report = {
         'status': '',
+        'version': '',
         'sync_latest': 0,
         'balance': 0,
         'rewards': 0,
@@ -91,6 +92,9 @@ def main_checker(
 
     explorer_block_r = explorer_browser.get_explorer_block_req()
     latest_explorer_block = 0 if not explorer_block_r else int(explorer_block_r["height"])
+
+    node_version = server_browser.get_version_req(ip=acc.ip, port=acc.port)
+    acc_report['version'] = node_version
 
     if server_block_r.result.latest.number + 3 < latest_explorer_block:
         logger.warning(
@@ -128,7 +132,7 @@ def main_checker(
         })
 
         logger.blue(
-            f"#{acc.id} | {acc.address} | status: {dashtec_r.status.lower()} | "
+            f"#{acc.id} | {acc.address} | {node_version} | status: {dashtec_r.status.lower()} | "
             f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number} | "
             f"balance (+r): {balance.float} $STK (+{rewards.float}), "
             f"attestations (m/s): "
@@ -143,7 +147,7 @@ def main_checker(
             status = f'#{queue_r}' if queue_r != "not_registered" else queue_r
             acc_report.update({'status': status})
             logger.warning(
-                f"#{acc.id} | {acc.address} | status: {status} | "
+                f"#{acc.id} | {acc.address} | {node_version} | status: {status} | "
                 f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number}."
             )
 

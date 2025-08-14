@@ -31,6 +31,25 @@ class AztecBrowser(CoreBrowser):
         else:
             raise Exception(f"can't get the latest block: {r}")
 
+    @retry(module="aztec: get_version_req")
+    def get_version_req(self, ip: str, port: int) -> str:
+        payload = {
+            "jsonrpc": "2.0",
+            "method": "node_getNodeInfo",
+            "params": [],
+            "id": 67
+        }
+        r = self.process_request(
+            method="POST",
+            url=f"http://{ip}:{port}",
+            payload=payload
+        )
+
+        if r and r.get('result'):
+            return f"v{r.get('result')['nodeVersion']}" if r.get('result')["nodeVersion"] else 'v0.0.0'
+        else:
+            raise Exception(f"can't get node version: {r}")
+
     @retry(module="aztec: get_dashtec_req")
     def get_dashtec_req(self, address: str) -> DashtecResponse:
         r = self.process_request(
