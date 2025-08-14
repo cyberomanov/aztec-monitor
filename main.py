@@ -134,7 +134,7 @@ def main_checker(
         logger.blue(
             f"#{acc.id} | {acc.address} | {node_version} | status: {dashtec_r.status.lower()} | "
             f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number} | "
-            f"balance (+r): {balance.float} $STK (+{rewards.float}), "
+            f"balance (r): {balance.float} $STK ({rewards.float}), "
             f"attestations (m/s): "
             f"{dashtec_r.totalAttestationsMissed}/"
             f"{dashtec_r.totalAttestationsSucceeded} ({dashtec_r.attestationSuccess}), "
