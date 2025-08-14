@@ -13,6 +13,8 @@ sleep_between_accs = (3, 5)
 # sleep in seconds between cycles
 sleep_between_loop = (600, 800)
 
+# telegram notifications: True / False
+enable_telegram_notifications = True
 # telegram bot API key
 bot_api_key = "22222:AAA-BBB"
 # chat ID where to send notifications for critical metrics
