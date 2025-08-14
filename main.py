@@ -139,7 +139,7 @@ def main_checker(
         queue_r = explorer_browser.get_queue_req(address=acc.address)
         if queue_r:
             status = f'#{queue_r}' if queue_r != "not_registered" else queue_r
-            acc_report.update({'status': {status}})
+            acc_report.update({'status': status})
             logger.warning(
                 f"#{acc.id} | {acc.address} | status: {status} | "
                 f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number}."
