@@ -77,6 +77,7 @@ def main_checker(
     server_block_r = server_browser.get_server_block_req(ip=acc.ip, port=acc.port)
     if not server_block_r:
         logger.error(f"#{acc.id} | {acc.address} | can't connect to {acc.ip}:{acc.port}.")
+        acc_report.update({'status': 'connection_refused'})
         if config.enable_telegram_notifications:
             telegram.send_alarm(
                 head=f"{acc.ip} | {acc.note}",
@@ -96,6 +97,7 @@ def main_checker(
             f"#{acc.id} | {acc.address} | "
             f"explorer height: {latest_explorer_block}, but the node is on {server_block_r.result.latest.number}."
         )
+        acc_report.update({'status': 'synced_out'})
         if config.enable_telegram_notifications:
             telegram.send_alarm(
                 head=f"{acc.ip} | {acc.note}",
