@@ -19,3 +19,7 @@ enable_telegram_notifications = True
 bot_api_key = "22222:AAA-BBB"
 # chat ID where to send notifications for critical metrics
 alarm_chat_id = "-1111"
+
+# minimum required attestation success rate (%).
+# if the rate falls below this threshold, an alarm will be triggered.
+attestation_success_threshold = 90

@@ -131,7 +131,7 @@ def main_checker(
             'block_proposed': dashtec_r.totalBlocksProposed
         })
 
-        logger.blue(
+        log = (
             f"#{acc.id} | {acc.address} | {node_version} | status: {dashtec_r.status.lower()} | "
             f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number} | "
             f"balance (r): {balance.float} $STK ({rewards.float}), "
@@ -141,6 +141,28 @@ def main_checker(
             f"blocks (m/s/p): "
             f"{dashtec_r.totalBlocksMissed}/{dashtec_r.totalBlocksMined}/{dashtec_r.totalBlocksProposed}."
         )
+
+        total_attestations = dashtec_r.totalAttestationsMissed + dashtec_r.totalAttestationsSucceeded
+        if total_attestations:
+            attestation_success_rate = round(dashtec_r.totalAttestationsSucceeded / total_attestations * 100, 2)
+            if attestation_success_rate < config.attestation_success_threshold:
+                logger.error(log)
+                if config.enable_telegram_notifications:
+                    telegram.send_alarm(
+                        head=f"{acc.ip} | {acc.note}",
+                        body=(
+                            f"low attestation success: "
+                            f"{dashtec_r.totalAttestationsSucceeded}/{total_attestations} "
+                            f"({attestation_success_rate}%)\n"
+                        ),
+                        dashtec=f"https://dashtec.xyz/validators/{acc.address}",
+                        sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
+                    )
+                return acc_report
+
+        logger.blue(log)
+        return acc_report
+
     elif dashtec_r.status == 'not_found':
         queue_r = explorer_browser.get_queue_req(address=acc.address)
         if queue_r:
