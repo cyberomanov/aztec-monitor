@@ -172,6 +172,16 @@ def main_checker(
                 f"#{acc.id} | {acc.address} | {node_version} | status: {status} | "
                 f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number}."
             )
+    elif dashtec_r.status.lower() == 'exiting' or dashtec_r.status.lower() == 'zombie':
+        acc_report.update({'status': dashtec_r.status.lower()})
+        logger.error(f"#{acc.id} | {acc.address} | {node_version} | status: {dashtec_r.status.lower()}.")
+        if config.enable_telegram_notifications:
+            telegram.send_alarm(
+                head=f"{acc.ip} | {acc.note}",
+                body=f"status: exited\n",
+                dashtec=f"https://dashtec.xyz/validators/{acc.address}",
+                sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
+            )
 
     return acc_report
 
