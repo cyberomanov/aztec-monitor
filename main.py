@@ -92,6 +92,8 @@ def main_checker(
 
     explorer_block_r = explorer_browser.get_explorer_block_req()
     latest_explorer_block = 0 if not explorer_block_r else int(explorer_block_r["height"])
+    if latest_explorer_block > 61_000:
+        latest_explorer_block = 0
 
     node_version = server_browser.get_version_req(ip=acc.ip, port=acc.port)
     acc_report['version'] = node_version
@@ -178,7 +180,7 @@ def main_checker(
         if config.enable_telegram_notifications:
             telegram.send_alarm(
                 head=f"{acc.ip} | {acc.note}",
-                body=f"status: exited\n",
+                body=f"status: exited.\n",
                 dashtec=f"https://dashtec.xyz/validators/{acc.address}",
                 sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
             )
