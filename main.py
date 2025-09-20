@@ -92,8 +92,6 @@ def main_checker(
 
     explorer_block_r = explorer_browser.get_explorer_block_req()
     latest_explorer_block = 0 if not explorer_block_r else int(explorer_block_r["height"])
-    if latest_explorer_block > 61_000:
-        latest_explorer_block = 0
 
     node_version = server_browser.get_version_req(ip=acc.ip, port=acc.port)
     acc_report['version'] = node_version
