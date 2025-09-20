@@ -168,10 +168,16 @@ def main_checker(
         if queue_r:
             status = f'#{queue_r}' if queue_r != "not_registered" else queue_r
             acc_report.update({'status': status})
-            logger.error(
-                f"#{acc.id} | {acc.address} | {node_version} | status: {status} | "
-                f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number}."
-            )
+            if queue_r == "not_registered":
+                logger.error(
+                    f"#{acc.id} | {acc.address} | {node_version} | status: {status} | "
+                    f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number}."
+                )
+            else:
+                logger.success(
+                    f"#{acc.id} | {acc.address} | {node_version} | status: {status} | "
+                    f"sync (e/s): {latest_explorer_block}/{server_block_r.result.latest.number}."
+                )
     elif dashtec_r.status.lower() == 'exiting' or dashtec_r.status.lower() == 'zombie':
         acc_report.update({'status': dashtec_r.status.lower()})
         logger.error(f"#{acc.id} | {acc.address} | {node_version} | status: {dashtec_r.status.lower()}.")
