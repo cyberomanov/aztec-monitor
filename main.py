@@ -115,6 +115,12 @@ def main_checker(
         return acc_report
 
     dashtec_r = explorer_browser.get_dashtec_req(address=acc.address)
+    if not dashtec_r:
+        logger.warning(
+            f"#{acc.id} | {acc.address} | can't get info about validator from dashtec."
+        )
+        return acc_report
+
     if dashtec_r.balance:
         balance = Balance(int=dashtec_r.balance, float=round(dashtec_r.balance / constants.DENOMINATION, 2))
         rewards = Balance(int=dashtec_r.balance, float=round(dashtec_r.unclaimedRewards / constants.DENOMINATION, 2))
