@@ -10,9 +10,9 @@ monitoring:
       scheme: "http"            # Схема прокси: http/socks5
       address: "mproxy.site"    # Адрес прокси сервера
       port: 10146                # Порт прокси
-      login: "uC5MaW"           # Логин
-      password: "zUP9Fyt7esCU"  # Пароль
-      change_ip_url: "https://changeip.mobileproxy.space/?proxy_key=47c7d3cb6e90becf849bae719e75685c"
+      login: "***"           # Логин
+      password: "***"  # Пароль
+      change_ip_url: "https://"
 
   # Настройки запросов
   requests:
@@ -45,4 +45,3 @@ telegram:
   bot_api_token: "22222:AAA-BBB"
   chat_id: "-1111"
   thread_id: null           # ID треда (topic) для форумов, null = отправка в общий чат
-
