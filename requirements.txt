@@ -1,0 +1,6 @@
+fake-useragent>=2.2.0
+loguru>=0.7.3
+pydantic==1.10.12
+PyYAML>=6.0.2
+requests>=2.32.4
+tls-client>=1.0.1

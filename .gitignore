@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+user_data/config.yaml
+user_data/reports/
+log/

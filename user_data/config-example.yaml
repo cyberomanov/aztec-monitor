@@ -1,0 +1,48 @@
+# Конфигурация для мониторинга валидаторов Aztec
+monitoring:
+  # Количество потоков для параллельных запросов (1 = последовательная обработка)
+  threads: 20
+
+  # Настройки мобильного прокси
+  proxy:
+    enabled: true  # Включить прокси
+    mobile_proxy:
+      scheme: "http"            # Схема прокси: http/socks5
+      address: "mproxy.site"    # Адрес прокси сервера
+      port: 10146                # Порт прокси
+      login: "uC5MaW"           # Логин
+      password: "zUP9Fyt7esCU"  # Пароль
+      change_ip_url: "https://changeip.mobileproxy.space/?proxy_key=47c7d3cb6e90becf849bae719e75685c"
+
+  # Настройки запросов
+  requests:
+    timeout: 30                # таймаут HTTP запросов (секунды)
+    retries: 1                 # количество повторов при ошибках
+    delay_between_requests: 0.5  # пауза между запросами (секунды)
+
+  # API настройки
+  api:
+    base_url: "https://dashtec.xyz/api"
+    endpoint: "/validators/{validator_address}"
+
+  # Настройки отчета. {timestamp} будет заменен на текущий таймштамп.
+  report:
+    output_file: "user_data/reports/{timestamp}.csv"
+
+  # Дополнительные параметры мониторинга
+  attestation_success_threshold: 90  # минимальный процент успешных аттестаций
+  accounts_file: "user_data/accounts.csv"  # путь до CSV со списком валидаторов
+
+  # Настройки циклической работы
+  cycle:
+    enabled: true           # Включить циклическую работу
+    sleep_minutes: 15       # Время сна между циклами в минутах
+    max_cycles: 0           # Максимальное количество циклов (0 = бесконечно)
+
+# Настройки уведомлений Telegram
+telegram:
+  enabled: true
+  bot_api_token: "22222:AAA-BBB"
+  chat_id: "-1111"
+  thread_id: null           # ID треда (topic) для форумов, null = отправка в общий чат
+

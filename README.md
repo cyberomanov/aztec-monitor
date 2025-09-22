@@ -10,47 +10,31 @@ git clone https://github.com/cyberomanov/aztec-monitor.git
 cd aztec-monitor
 ```
 
-### 2. Install uv
+### 2. Install dependencies
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-### 3. Install dependencies
-```bash
-uv sync
+pip3 install -r requirements.txt
 ```
 
 ## Configuration
 
 ### 1. Configuration
-Copy the example config and configure:
+Copy the example YAML config and adjust it to your infrastructure:
 ```bash
-cp user_data/config-example.py user_data/config.py
+cp user_data/config-example.yaml user_data/config.yaml
 ```
 
-Edit `user_data/config.py`:
-```python
-# maximum number of retry attempts on errors
-max_retries = 3
+The configuration is split into two sections:
 
-# mobile proxy for interaction with aztecscan and dashtec to avoid rate limits
-# you can buy mobile/residential proxies here: https://proxyshard.com?ref=cyberomanov
-# if you don't want to use proxy, you can leave this setting as is or fill with empty string
-mobile_proxy = "socks5://log:pass@ip:port"
-# mobile_proxy = "http://log:pass@ip:port"
-# mobile_proxy = ""
-
-# sleep in seconds between account checks
-sleep_between_accs = (3, 5)
-# sleep in seconds between cycles
-sleep_between_loop = (600, 800)
-
-# telegram bot API key
-bot_api_key = "22222:AAA-BBB"
-# chat ID where to send notifications for critical metrics
-alarm_chat_id = "-1111"
-
-```
+- `monitoring` &mdash; runtime behaviour:
+  - `threads` &mdash; how many validators are processed in parallel.
+  - `proxy` &mdash; optional mobile proxy credentials (scheme/login/password supported).
+  - `requests` &mdash; HTTP timeout, retry count and delay between requests.
+  - `api` &mdash; Dashtec API base URL and validator endpoint template.
+  - `report` &mdash; path template for generated reports (supports `{timestamp}` placeholder).
+  - `attestation_success_threshold` &mdash; minimal successful attestation percentage before an alert.
+  - `accounts_file` &mdash; CSV file with validator list.
+  - `cycle` &mdash; enable/disable loop mode, sleep duration between cycles and maximum cycles count.
+- `telegram` &mdash; notification settings with optional `thread_id` for sending alerts into a specific forum topic.
 
 ### 2. Validator list
 Edit `user_data/accounts.csv`:
@@ -63,7 +47,7 @@ id,address,ip,port,note
 ## Running
 
 ```bash
-uv run main.py
+python3 main.py
 ```
 
 ## Core Algorithm
@@ -116,9 +100,9 @@ uv run main.py
    - Logs of all operations via loguru
 
 4. **Delays and retries**:
-   - Between validators: as configured, default: 3-5 sec
-   - Between cycles: as configured, default: 10-13 min
-   - Retry on HTTP errors: up to 3 attempts
+   - Between HTTP requests: `monitoring.requests.delay_between_requests`
+   - Between cycles: `monitoring.cycle.sleep_minutes`
+   - Retry on HTTP errors: `monitoring.requests.retries`
 
 ## Core Components
 
