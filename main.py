@@ -86,7 +86,7 @@ def main_checker(
                 telegram.send_alarm(
                     head=f"{acc.ip} | {acc.note}",
                     body="can't get the latest block.",
-                    dashtec=f"https://dashtec.xyz/validators/{acc.address}",
+                    dashtec=f"https://testnet.dashtec.xyz/validators/{acc.address}",
                     sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
                 )
             return acc_report
@@ -112,7 +112,7 @@ def main_checker(
                         f"explorer height: {latest_explorer_block}\n"
                         f"node height: {server_block_r.result.latest.number}"
                     ),
-                    dashtec=f"https://dashtec.xyz/validators/{acc.address}",
+                    dashtec=f"https://testnet.dashtec.xyz/validators/{acc.address}",
                     sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
                 )
             return acc_report
@@ -126,7 +126,8 @@ def main_checker(
 
         if dashtec_r.balance:
             balance = Balance(int=dashtec_r.balance, float=round(dashtec_r.balance / constants.DENOMINATION, 2))
-            rewards = Balance(int=dashtec_r.balance, float=round(dashtec_r.unclaimedRewards / constants.DENOMINATION, 2))
+            rewards = Balance(int=dashtec_r.balance,
+                              float=round(dashtec_r.unclaimedRewards / constants.DENOMINATION, 2))
 
             acc_report.update({
                 'status': dashtec_r.status.lower(),
@@ -164,7 +165,7 @@ def main_checker(
                                 f"{dashtec_r.totalAttestationsSucceeded}/{total_attestations} "
                                 f"({attestation_success_rate}%)\n"
                             ),
-                            dashtec=f"https://dashtec.xyz/validators/{acc.address}",
+                            dashtec=f"https://testnet.dashtec.xyz/validators/{acc.address}",
                             sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
                         )
                     return acc_report
@@ -194,7 +195,7 @@ def main_checker(
                 telegram.send_alarm(
                     head=f"{acc.ip} | {acc.note}",
                     body=f"status: exited.\n",
-                    dashtec=f"https://dashtec.xyz/validators/{acc.address}",
+                    dashtec=f"https://testnet.dashtec.xyz/validators/{acc.address}",
                     sepoliascan=f"https://sepolia.etherscan.io/address/{acc.address}"
                 )
     except Exception as e:
